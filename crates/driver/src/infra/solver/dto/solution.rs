@@ -18,7 +18,7 @@ use {
 };
 
 #[derive(derive_more::From)]
-pub struct Solutions(solvers_dto::solution::Solutions);
+pub struct Solutions(pub solvers_dto::solution::Solutions);
 
 impl Solutions {
     const MAX_BASE_POINT: u32 = 10000;

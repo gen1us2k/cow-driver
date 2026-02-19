@@ -148,7 +148,7 @@ pub struct Quote {
 }
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Token {
     pub decimals: Option<u8>,

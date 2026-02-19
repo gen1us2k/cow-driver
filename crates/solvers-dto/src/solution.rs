@@ -100,7 +100,7 @@ pub enum Kind {
     Buy,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum Interaction {
     Liquidity(LiquidityInteraction),
@@ -108,7 +108,7 @@ pub enum Interaction {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub struct Call {
     pub target: Address,
@@ -119,7 +119,7 @@ pub struct Call {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LiquidityInteraction {
     pub internalize: bool,
@@ -133,7 +133,7 @@ pub struct LiquidityInteraction {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct CustomInteraction {
     pub internalize: bool,
@@ -151,7 +151,7 @@ pub struct CustomInteraction {
 /// An interaction that can be executed as part of an order's pre- or
 /// post-interactions.
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderInteraction {
     pub target: Address,
@@ -163,7 +163,7 @@ pub struct OrderInteraction {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Asset {
     pub token: Address,
@@ -172,7 +172,7 @@ pub struct Asset {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Allowance {
     pub token: Address,

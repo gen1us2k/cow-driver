@@ -13,7 +13,6 @@ use {
     solver::solver::Arn,
     std::{collections::HashMap, time::Duration},
 };
-
 mod load;
 
 #[serde_as]

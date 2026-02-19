@@ -1,4 +1,5 @@
 pub mod competition;
+#[cfg(feature = "cow-amm")]
 pub mod cow_amm;
 pub mod eth;
 pub mod liquidity;

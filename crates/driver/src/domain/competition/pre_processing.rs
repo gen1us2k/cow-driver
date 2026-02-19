@@ -3,7 +3,6 @@ use {
     crate::{
         domain::{
             competition::order::{SellTokenBalance, app_data::AppData},
-            cow_amm,
             eth,
             liquidity,
         },
@@ -48,6 +47,7 @@ pub struct DataFetchingTasks {
     pub balances: Shared<Arc<Balances>>,
     pub app_data:
         Shared<Arc<HashMap<order::app_data::AppDataHash, Arc<app_data::ValidatedAppData>>>>,
+    #[cfg(feature = "cow-amm")]
     pub cow_amm_orders: Shared<Arc<Vec<Order>>>,
     pub liquidity: Shared<Arc<Vec<liquidity::Liquidity>>>,
 }
@@ -60,6 +60,7 @@ pub struct Utilities {
     liquidity_fetcher: infra::liquidity::Fetcher,
     tokens: tokens::Fetcher,
     balance_fetcher: Arc<dyn BalanceFetching>,
+    #[cfg(feature = "cow-amm")]
     cow_amm_cache: Option<cow_amm::Cache>,
 }
 
@@ -133,12 +134,14 @@ impl DataAggregator {
             eth.balance_overrider(),
         );
 
+        #[cfg(feature = "cow-amm")]
         let cow_amm_helper_by_factory = eth
             .contracts()
             .cow_amm_helper_by_factory()
             .iter()
             .map(|(factory, helper)| (factory.0, helper.0))
             .collect();
+        #[cfg(feature = "cow-amm")]
         let cow_amm_cache =
             cow_amm::Cache::new(eth.web3().provider.clone(), cow_amm_helper_by_factory);
 
@@ -150,6 +153,7 @@ impl DataAggregator {
                 liquidity_fetcher,
                 tokens,
                 balance_fetcher,
+                #[cfg(feature = "cow-amm")]
                 cow_amm_cache,
             }),
             control: Mutex::new(ControlBlock {
@@ -158,6 +162,7 @@ impl DataAggregator {
                     auction: futures::future::pending().boxed().shared(),
                     balances: futures::future::pending().boxed().shared(),
                     app_data: futures::future::pending().boxed().shared(),
+                    #[cfg(feature = "cow-amm")]
                     cow_amm_orders: futures::future::pending().boxed().shared(),
                     liquidity: futures::future::pending().boxed().shared(),
                 },
@@ -175,6 +180,7 @@ impl DataAggregator {
             Arc::clone(&self.utilities).collect_orders_app_data(Arc::clone(&auction)),
         );
 
+        #[cfg(feature = "cow-amm")]
         let cow_amm_orders =
             Self::spawn_shared(Arc::clone(&self.utilities).cow_amm_orders(Arc::clone(&auction)));
 
@@ -185,6 +191,7 @@ impl DataAggregator {
             auction: futures::future::ready(auction).boxed().shared(),
             balances,
             app_data,
+            #[cfg(feature = "cow-amm")]
             cow_amm_orders,
             liquidity,
         })
@@ -389,6 +396,7 @@ impl Utilities {
         Arc::new(app_data)
     }
 
+    #[cfg(feature = "cow-amm")]
     async fn cow_amm_orders(self: Arc<Self>, auction: Arc<Auction>) -> Arc<Vec<Order>> {
         let Some(ref cow_amm_cache) = self.cow_amm_cache else {
             // CoW AMMs are not configured, return empty vec

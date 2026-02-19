@@ -19,14 +19,14 @@ use {
 #[derive(Debug, Clone)]
 pub struct Auction {
     /// See the [`Self::id`] method.
-    pub(crate) id: Option<Id>,
+    pub id: Option<Id>,
     /// See the [`Self::orders`] method.
-    pub(crate) orders: Vec<competition::Order>,
+    pub orders: Vec<competition::Order>,
     /// The tokens that are used in the orders of this auction.
-    pub(crate) tokens: Tokens,
-    pub(crate) gas_price: eth::GasPrice,
-    pub(crate) deadline: chrono::DateTime<chrono::Utc>,
-    pub(crate) surplus_capturing_jit_order_owners: HashSet<eth::Address>,
+    pub tokens: Tokens,
+    pub gas_price: eth::GasPrice,
+    pub deadline: chrono::DateTime<chrono::Utc>,
+    pub surplus_capturing_jit_order_owners: HashSet<eth::Address>,
 }
 
 impl Auction {
@@ -132,7 +132,7 @@ impl Auction {
 
 /// The tokens that are used in an auction.
 #[derive(Debug, Default, Clone)]
-pub struct Tokens(HashMap<eth::TokenAddress, Token>);
+pub struct Tokens(pub HashMap<eth::TokenAddress, Token>);
 
 impl Tokens {
     pub fn get(&self, address: &eth::TokenAddress) -> Option<&Token> {

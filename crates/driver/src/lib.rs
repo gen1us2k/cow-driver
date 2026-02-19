@@ -2,6 +2,7 @@
 //! spawn a process.
 
 #![forbid(unsafe_code)]
+#![feature(duration_constructors_lite)]
 
 pub mod boundary;
 pub mod domain;

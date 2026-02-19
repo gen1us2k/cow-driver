@@ -39,7 +39,7 @@ use {
 
 pub mod auction;
 pub mod order;
-mod pre_processing;
+pub mod pre_processing;
 pub mod risk_detector;
 pub mod solution;
 pub mod sorting;
@@ -132,8 +132,11 @@ impl Competition {
         let solver_address = self.solver.address();
         let order_sorting_strategies = self.order_sorting_strategies.clone();
 
+        let cow_amm_orders = Default::default();
         // Add the CoW AMM orders to the auction
+        #[cfg(feature = "cow-amm")]
         let cow_amm_orders = tasks.cow_amm_orders.await;
+        #[cfg(feature = "cow-amm")]
         auction.orders.extend(cow_amm_orders.iter().cloned());
 
         let settlement = settlement_contract;

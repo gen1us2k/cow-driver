@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// A percentage value. The value is guaranteed to be in the range [0,1].
 #[derive(Clone, Copy, Debug)]
-pub struct Percent(f64);
+pub struct Percent(pub f64);
 
 impl Percent {
     pub fn get(&self) -> f64 {

@@ -23,7 +23,7 @@ bigdecimal = { workspace = true }
 bytes-hex = { workspace = true } # may get marked as unused but it's used with serde
 chain = { workspace = true }
 chrono = { workspace = true, features = ["clock"], default-features = false }
-cow-amm = { workspace = true }
+cow-amm = { workspace = true, optional=true }
 dashmap = { workspace = true }
 derive_more = { workspace = true }
 ethrpc = { workspace = true }
@@ -89,3 +89,4 @@ workspace = true
 [features]
 mimalloc-allocator = ["dep:mimalloc"]
 tokio-console = ["observe/tokio-console"]
+cow-amm = ["dep:cow-amm"]

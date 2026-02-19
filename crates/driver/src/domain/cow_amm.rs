@@ -1,3 +1,4 @@
+#[cfg(feature = "cow-amm")]
 use {
     crate::domain::eth,
     alloy::{primitives::Address, providers::DynProvider},

@@ -192,6 +192,52 @@ pub struct Config {
     /// interaction calldata. Default: 0 (no haircut).
     pub haircut_bps: u32,
 }
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            endpoint: url::Url::parse("http://localhost:3000/solve").unwrap(),
+            name: Name("default".to_string()),
+            slippage: Slippage {
+                relative: BigRational::from_integer(0.into()),
+                absolute: None,
+            },
+            liquidity: Liquidity::Fetch,
+            account: Account::Address(Address::ZERO),
+            timeouts: Timeouts {
+                http_delay: chrono::Duration::seconds(10),
+                solving_share_of_deadline: util::Percent(0.5),
+            },
+            request_headers: HashMap::new(),
+            fee_handler: FeeHandler::Solver,
+            quote_using_limit_orders: false,
+            merge_solutions: SolutionMerging::Allowed {
+                max_orders_per_merged_solution: usize::MAX,
+            },
+            s3: None,
+            solver_native_token: ManageNativeToken {
+                wrap_address: false,
+                insert_unwraps: false,
+            },
+            quote_tx_origin: None,
+            response_size_limit_max_bytes: 10 * 1024 * 1024, // 10 MiB
+            bad_order_detection: BadOrderDetection {
+                tokens_supported: HashMap::new(),
+                enable_simulation_strategy: true,
+                enable_metrics_strategy: true,
+                metrics_strategy_failure_ratio: 0.5,
+                metrics_strategy_required_measurements: 10,
+                metrics_strategy_log_only: false,
+                metrics_strategy_order_freeze_time: Duration::from_secs(60 * 60), // 1 hour
+                metrics_strategy_cache_gc_interval: Duration::from_secs(60 * 60), // 1 hour
+                metrics_strategy_cache_max_age: Duration::from_secs(60 * 60 * 24), // 24 hours
+            },
+            settle_queue_size: 100,
+            flashloans_enabled: false,
+            fetch_liquidity_at_block: infra::liquidity::AtBlock::Latest,
+            haircut_bps: 0,
+        }
+    }
+}
 
 impl Solver {
     pub async fn try_new(config: Config, eth: Ethereum) -> Result<Self> {

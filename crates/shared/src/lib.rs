@@ -13,6 +13,7 @@ pub mod db_order_conversions;
 pub mod encoded_settlement;
 pub mod ethrpc;
 pub mod event_handling;
+#[cfg(feature = "quoter")]
 pub mod event_storing_helpers;
 pub mod external_prices;
 pub mod fee;
@@ -22,7 +23,9 @@ pub mod http_client;
 pub mod http_solver;
 pub mod interaction;
 pub mod maintenance;
+#[cfg(feature = "quoter")]
 pub mod order_quoting;
+#[cfg(feature = "quoter")]
 pub mod order_validation;
 pub mod price_estimation;
 pub mod recent_block_cache;
