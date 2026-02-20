@@ -3,6 +3,7 @@
 
 #![forbid(unsafe_code)]
 #![feature(duration_constructors_lite)]
+#![feature(slice_as_array)]
 
 pub mod boundary;
 pub mod domain;
