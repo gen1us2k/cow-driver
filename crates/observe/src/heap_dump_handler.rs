@@ -25,6 +25,9 @@ use {
 pub fn spawn_heap_dump_handler() {
     // Check if jemalloc profiling is available at runtime
     // This depends on whether MALLOC_CONF=prof:true was set
+    let profiling_available = false;
+
+    #[cfg(feature = "jemalloc-pprof")]
     let profiling_available =
         std::panic::catch_unwind(|| jemalloc_pprof::PROF_CTL.as_ref().is_some()).unwrap_or(false);
 
@@ -114,7 +117,10 @@ async fn handle_connection_with_socket(mut socket: UnixStream) {
     let message = read_line(&mut socket).await;
     match message.as_deref() {
         Some("dump") => {
+            #[cfg(feature = "jemalloc-pprof")]
             generate_and_stream_dump(&mut socket).await;
+
+            tracing::debug!("finished handling dump request");
         }
         Some("") => {
             tracing::debug!("client disconnected");
@@ -128,6 +134,7 @@ async fn handle_connection_with_socket(mut socket: UnixStream) {
     }
 }
 
+#[cfg(feature = "jemalloc-pprof")]
 async fn generate_and_stream_dump(socket: &mut UnixStream) {
     tracing::info!("generating heap dump");
 
