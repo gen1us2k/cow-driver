@@ -34,7 +34,7 @@ humantime = { workspace = true }
 humantime-serde = { workspace = true }
 itertools = { workspace = true }
 mimalloc = { workspace = true, optional = true }
-tikv-jemallocator = { workspace = true }
+tikv-jemallocator = { workspace = true, optional = true }
 moka = { workspace = true, features = ["future"] }
 num = { workspace = true }
 number = { workspace = true }
@@ -87,5 +87,6 @@ workspace = true
 
 [features]
 mimalloc-allocator = ["dep:mimalloc"]
+jemalloc-allocator = ["dep:tikv-jemallocator"]
 tokio-console = ["observe/tokio-console"]
 cow-amm = ["dep:cow-amm"]
