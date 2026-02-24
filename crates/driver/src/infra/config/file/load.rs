@@ -372,6 +372,7 @@ pub async fn load(chain: Chain, path: &Path) -> infra::Config {
             (Some(_), Some(_)) => panic!("Cannot configure both Tenderly and Enso"),
         },
         contracts: blockchain::contracts::Addresses {
+            orig_settlement: config.contracts.gp_v2_settlement.map(Into::into),
             settlement: config.contracts.gp_v2_settlement.map(Into::into),
             weth: config.contracts.weth.map(Into::into),
             balances: config.contracts.balances.map(Into::into),

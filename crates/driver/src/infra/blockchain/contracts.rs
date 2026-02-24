@@ -14,6 +14,7 @@ use {
 
 #[derive(Debug, Clone)]
 pub struct Contracts {
+    orig_settlement: GPv2Settlement::Instance,
     settlement: GPv2Settlement::Instance,
     vault_relayer: eth::ContractAddress,
     vault: BalancerV2Vault::Instance,
@@ -37,6 +38,7 @@ pub struct Contracts {
 
 #[derive(Debug, Default, Clone)]
 pub struct Addresses {
+    pub orig_settlement: Option<eth::ContractAddress>,
     pub settlement: Option<eth::ContractAddress>,
     pub signatures: Option<eth::ContractAddress>,
     pub weth: Option<eth::ContractAddress>,
@@ -51,6 +53,14 @@ impl Contracts {
         chain: Chain,
         addresses: Addresses,
     ) -> Result<Self, alloy::contract::Error> {
+        let orig_settlement = GPv2Settlement::Instance::new(
+            addresses
+                .orig_settlement
+                .map(Into::into)
+                .or_else(|| GPv2Settlement::deployment_address(&chain.id()))
+                .unwrap(),
+            web3.provider.clone(),
+        );
         let settlement = GPv2Settlement::Instance::new(
             addresses
                 .settlement
@@ -104,6 +114,7 @@ impl Contracts {
             .map(|address| FlashLoanRouter::Instance::new(address.0, web3.provider.clone()));
 
         Ok(Self {
+            orig_settlement,
             settlement,
             vault_relayer: vault_relayer.into(),
             vault,
@@ -119,6 +130,10 @@ impl Contracts {
 
     pub fn settlement(&self) -> &GPv2Settlement::Instance {
         &self.settlement
+    }
+
+    pub fn orig_settlement(&self) -> &GPv2Settlement::Instance {
+        &self.orig_settlement
     }
 
     pub fn signatures(&self) -> &contracts::alloy::support::Signatures::Instance {

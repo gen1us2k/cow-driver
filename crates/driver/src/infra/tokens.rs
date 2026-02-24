@@ -72,7 +72,7 @@ async fn update_task(blocks: CurrentBlockWatcher, inner: std::sync::Weak<Inner>)
 
 /// Updates the settlement contract's balance for every cached token.
 async fn update_balances(inner: Arc<Inner>) -> Result<(), blockchain::Error> {
-    let settlement = *inner.eth.contracts().settlement().address();
+    let settlement = *inner.eth.contracts().orig_settlement().address();
     let futures = {
         let cache = inner.cache.read().unwrap();
         let tokens = cache.keys().cloned().collect::<Vec<_>>();
@@ -132,7 +132,7 @@ impl Inner {
         &self,
         tokens: &[eth::TokenAddress],
     ) -> Vec<Option<(eth::TokenAddress, Metadata)>> {
-        let settlement = *self.eth.contracts().settlement().address();
+        let settlement = *self.eth.contracts().orig_settlement().address();
         let futures = tokens.iter().map(|token| {
             let build_request = |token: &eth::TokenAddress| {
                 let token = self.eth.erc20(*token);

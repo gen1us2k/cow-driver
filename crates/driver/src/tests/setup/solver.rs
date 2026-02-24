@@ -463,6 +463,7 @@ impl Solver {
         let eth = Ethereum::new(
             rpc,
             Addresses {
+                orig_settlement: Some((*config.blockchain.settlement.address()).into()),
                 settlement: Some((*config.blockchain.settlement.address()).into()),
                 weth: Some((*config.blockchain.weth.address()).into()),
                 balances: Some((*config.blockchain.balances.address()).into()),
