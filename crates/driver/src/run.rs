@@ -15,12 +15,7 @@ use {
             simulator::{self, Simulator},
             solver::Solver,
         },
-    },
-    clap::Parser,
-    futures::future::join_all,
-    shared::arguments::tracing_config,
-    std::{net::SocketAddr, sync::Arc, time::Duration},
-    tokio::sync::oneshot,
+    }, clap::Parser, futures::future::join_all, shared::arguments::tracing_config, std::{net::SocketAddr, sync::Arc, time::Duration}, tokio::sync::oneshot
 };
 
 /// The driver entry-point. This function exists in order to be able to run the
@@ -182,6 +177,7 @@ async fn ethereum(
         gas,
         config.tx_gas_limit,
         current_block_args,
+        None,
     )
     .await
 }

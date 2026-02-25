@@ -51,7 +51,7 @@ impl Quote {
                 .into_iter()
                 .flatten()
                 .collect(),
-            solver: solution.solver().address(),
+            solver: solution.solver().submission_address(),
             gas: solution.gas(),
             tx_origin: *solution.solver().quote_tx_origin(),
             jit_orders: solution

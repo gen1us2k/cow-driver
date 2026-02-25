@@ -113,6 +113,7 @@ impl Ethereum {
         gas: Arc<GasPriceEstimator>,
         tx_gas_limit: U256,
         current_block_args: &shared::current_block::Arguments,
+        from_address: Option<eth::Address>,
     ) -> Self {
         let Rpc { web3, chain, args } = rpc;
 
@@ -121,7 +122,7 @@ impl Ethereum {
             .await
             .expect("couldn't initialize current block stream");
 
-        let contracts = Contracts::new(&web3, chain, addresses)
+        let contracts = Contracts::new(&web3, chain, addresses, from_address)
             .await
             .expect("could not initialize important smart contracts");
         let balance_overrider = Arc::new(BalanceOverrides::new(web3.clone()));

@@ -30,7 +30,7 @@ impl Solution {
         Self {
             solution_id,
             score: solved.score.0,
-            submission_address: solver.address(),
+            submission_address: solver.submission_address(),
             orders: solved
                 .trades
                 .into_iter()

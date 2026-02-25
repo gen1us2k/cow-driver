@@ -161,6 +161,7 @@ pub struct Config {
     pub liquidity: Liquidity,
     /// The private key of this solver, used for settlement submission.
     pub account: Account,
+    pub submission_address: eth::Address,
     /// How much time to spend for each step of the solving and competition.
     pub timeouts: Timeouts,
     /// HTTP headers that should be added to every request.
@@ -203,6 +204,7 @@ impl Default for Config {
             },
             liquidity: Liquidity::Fetch,
             account: Account::Address(Address::ZERO),
+            submission_address: Address::ZERO,
             timeouts: Timeouts {
                 http_delay: chrono::Duration::seconds(10),
                 solving_share_of_deadline: util::Percent(0.5),
@@ -296,6 +298,10 @@ impl Solver {
     /// The account which should be used to sign settlements for this solver.
     pub fn account(&self) -> Account {
         self.config.account.clone()
+    }
+
+    pub fn submission_address(&self) -> eth::Address {
+        self.config.submission_address
     }
 
     /// Timeout configuration for this solver.

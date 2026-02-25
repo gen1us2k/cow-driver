@@ -52,6 +52,7 @@ impl Contracts {
         web3: &Web3,
         chain: Chain,
         addresses: Addresses,
+        from_address: Option<eth::Address>,
     ) -> Result<Self, alloy::contract::Error> {
         let orig_settlement = GPv2Settlement::Instance::new(
             addresses
@@ -98,14 +99,25 @@ impl Contracts {
             web3.provider.clone(),
         );
 
-        let settlement_domain_separator = eth::DomainSeparator(
-            settlement
-                .domainSeparator()
-                .call()
-                .await
-                .expect("domain separator")
-                .0,
-        );
+        let settlement_domain_separator = match from_address {
+            Some(from) => eth::DomainSeparator(
+                settlement
+                    .domainSeparator()
+                    .from(from)
+                    .call()
+                    .await
+                    .expect("domain separator")
+                    .0,
+            ),
+            None => eth::DomainSeparator(
+                settlement
+                    .domainSeparator()
+                    .call()
+                    .await
+                    .expect("domain separator")
+                    .0,
+            ),
+        };
 
         // TODO: use `address_for()` once contracts are deployed
         let flashloan_router = addresses

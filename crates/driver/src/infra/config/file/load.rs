@@ -12,7 +12,7 @@ use {
             solver::{self, Account, BadOrderDetection, SolutionMerging},
         },
     },
-    alloy::signers::{aws::AwsSigner, local::PrivateKeySigner},
+    alloy::{network::TxSigner, signers::{aws::AwsSigner, local::PrivateKeySigner}},
     chain::Chain,
     futures::future::join_all,
     number::conversions::big_decimal_to_big_rational,
@@ -83,6 +83,7 @@ pub async fn load(chain: Chain, path: &Path) -> infra::Config {
                 } else {
                     solver::Liquidity::Fetch
                 },
+                submission_address: account.address().clone(),
                 account,
                 timeouts: solver::Timeouts {
                     http_delay: chrono::Duration::from_std(solver_config.timeouts.http_time_buffer)

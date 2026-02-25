@@ -477,6 +477,7 @@ impl Solver {
                 block_stream_poll_interval: None,
                 node_ws_url: Some(config.blockchain.web3_ws_url.parse().unwrap()),
             },
+            None,
         )
         .await;
 
