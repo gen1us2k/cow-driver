@@ -50,6 +50,17 @@ impl Simulator {
         }
     }
 
+    /// Simulate transactions using the Ethereum RPC API.
+    pub fn ethereum_trace(eth: Ethereum) -> Self {
+        let eth = eth.with_metric_label("web3TraceSimulator".into());
+        Self {
+            inner: Inner::EthereumTrace,
+            eth,
+            disable_access_lists: false,
+            disable_gas: None,
+        }
+    }
+
     /// Simulate transactions using the [Enso Simulator](https://github.com/EnsoFinance/transaction-simulator).
     /// Uses Ethereum RPC API to generate access lists.
     pub fn enso(config: enso::Config, eth: Ethereum) -> Self {
@@ -94,7 +105,7 @@ impl Simulator {
                     .map_err(with(tx.clone(), block))?
                     .access_list
             }
-            Inner::Ethereum => self
+            Inner::Ethereum | Inner::EthereumTrace => self
                 .eth
                 .create_access_list(tx.clone())
                 .await
@@ -128,6 +139,11 @@ impl Simulator {
                 .estimate_gas(tx.clone())
                 .await
                 .map_err(with(tx.clone(), block))?,
+            Inner::EthereumTrace => self
+                .eth
+                .trace(tx)
+                .await
+                .map_err(with(tx.clone(), block))?,
             Inner::Enso(enso) => enso
                 .simulate(tx.clone())
                 .measure("enso_simulate_gas")
@@ -141,6 +157,7 @@ impl Simulator {
 enum Inner {
     Tenderly(tenderly::Tenderly),
     Ethereum,
+    EthereumTrace,
     Enso(enso::Enso),
 }
 

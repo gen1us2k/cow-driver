@@ -1,3 +1,5 @@
+use alloy::{providers::ext::TraceApi, rpc::types::trace::parity::TraceOutput};
+
 use {
     crate::{
         boundary,
@@ -238,6 +240,49 @@ impl Ethereum {
         Ok(estimated_gas)
     }
 
+    pub async fn trace(&self, tx: &eth::Tx) -> Result<eth::Gas, Error> {
+        let tx = TransactionRequest::default()
+            .from(tx.from)
+            .to(tx.to)
+            .value(tx.value.0)
+            .input(tx.input.clone().into())
+            .access_list(tx.access_list.clone().into());
+
+        let trace = self
+            .web3
+            .provider
+            .trace_call(
+                &tx
+            )
+            .pending() // FIX: Maybe need to check it later
+            .await?;
+
+        let traces = trace.trace;
+
+        let trace = traces.get(0).ok_or(Error::Trace)?;
+
+        if let Some(err) = &trace.error {
+            tracing::error!("trace error: {:?}", err);
+            Err(Error::Trace)
+        } else {
+            let max_gas_used = traces.iter().filter_map(|x| match &x.result {
+                Some(TraceOutput::Call(result)) => Some(result.gas_used),
+                _ => None,
+            }).max();
+
+            match (&trace.result, max_gas_used) {
+                (Some(TraceOutput::Call(result)), Some(max_gas)) => {
+                    if result.gas_used != max_gas {
+                        tracing::warn!("trace gas used {}, max gas used {}", result.gas_used, max_gas);
+                    }
+
+                    Ok(max_gas.into())
+                },
+                (_, _) => Err(Error::Trace),
+            }
+        }
+    }
+
     /// The gas price is determined based on the deadline by which the
     /// transaction must be included on-chain. A shorter deadline requires a
     /// higher gas price to increase the likelihood of timely inclusion.
@@ -333,6 +378,8 @@ pub enum Error {
     GasPrice(boundary::Error),
     #[error("access list estimation error: {0:?}")]
     AccessList(String),
+    #[error("trace estimation error")]
+    Trace,
 }
 
 impl Error {
@@ -344,6 +391,7 @@ impl Error {
             Error::GasPrice(_) => false,
             Error::AccessList(_) => true,
             Error::ContractRpc(_) => true,
+            Error::Trace => true,
             Error::Rpc(err) => {
                 let is_revert = err.is_error_resp();
                 tracing::trace!(is_revert, ?err, "classified error");
