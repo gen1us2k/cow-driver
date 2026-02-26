@@ -62,6 +62,7 @@ impl Contracts {
                 .unwrap(),
             web3.provider.clone(),
         );
+
         let settlement = GPv2Settlement::Instance::new(
             addresses
                 .settlement
@@ -70,9 +71,17 @@ impl Contracts {
                 .unwrap(),
             web3.provider.clone(),
         );
-        let vault_relayer = settlement.vaultRelayer().call().await?;
-        let vault =
-            BalancerV2Vault::Instance::new(settlement.vault().call().await?, web3.provider.clone());
+
+        let vault_relayer = match from_address {
+            Some(address) => settlement.vaultRelayer().from(address).call().await?,
+            None => settlement.vaultRelayer().call().await?,
+        };
+
+        let vault = match from_address {
+            Some(address) => BalancerV2Vault::Instance::new(settlement.vault().from(address).call().await?, web3.provider.clone()),
+            None => BalancerV2Vault::Instance::new(settlement.vault().call().await?, web3.provider.clone()),
+        };
+
         let balance_helper = Balances::Instance::new(
             addresses
                 .balances
