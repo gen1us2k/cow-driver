@@ -80,7 +80,7 @@ async fn run_with(args: cli::Args, addr_sender: Option<oneshot::Sender<SocketAdd
                         config
                             .solvers
                             .iter()
-                            .map(|config| config.account.clone())
+                            .map(|config| config.accounts.first().expect("No accounts available").clone())
                             .collect(),
                     )
                 })

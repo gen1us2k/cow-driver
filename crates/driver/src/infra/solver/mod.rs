@@ -160,7 +160,7 @@ pub struct Config {
     /// Whether or not liquidity is used by this solver.
     pub liquidity: Liquidity,
     /// The private key of this solver, used for settlement submission.
-    pub account: Account,
+    pub accounts: Vec<Account>,
     pub submission_address: eth::Address,
     /// How much time to spend for each step of the solving and competition.
     pub timeouts: Timeouts,
@@ -203,7 +203,7 @@ impl Default for Config {
                 absolute: None,
             },
             liquidity: Liquidity::Fetch,
-            account: Account::Address(Address::ZERO),
+            accounts: vec![Account::Address(Address::ZERO)],
             submission_address: Address::ZERO,
             timeouts: Timeouts {
                 http_delay: chrono::Duration::seconds(10),
@@ -292,12 +292,17 @@ impl Solver {
 
     /// The blockchain address of this solver.
     pub fn address(&self) -> eth::Address {
-        self.config.account.address()
+        self.config.accounts.first().expect("No accounts available").address()
     }
 
     /// The account which should be used to sign settlements for this solver.
     pub fn account(&self) -> Account {
-        self.config.account.clone()
+        self.config.accounts.first().expect("No accounts available").clone()
+    }
+
+    /// The account which should be used to sign settlements for this solver.
+    pub fn accounts(&self) -> Vec<Account> {
+        self.config.accounts.clone()
     }
 
     pub fn submission_address(&self) -> eth::Address {

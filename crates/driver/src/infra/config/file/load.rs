@@ -84,7 +84,7 @@ pub async fn load(chain: Chain, path: &Path) -> infra::Config {
                     solver::Liquidity::Fetch
                 },
                 submission_address: account.address().clone(),
-                account,
+                accounts: vec![account],
                 timeouts: solver::Timeouts {
                     http_delay: chrono::Duration::from_std(solver_config.timeouts.http_time_buffer)
                         .unwrap(),
