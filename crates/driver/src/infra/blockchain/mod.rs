@@ -196,9 +196,12 @@ impl Ethereum {
     {
         let tx = tx.into();
 
-        let gas_limit = self.inner.tx_gas_limit.try_into().map_err(|err| {
-            Error::GasPrice(anyhow!("failed to convert gas_limit to u64: {err:?}"))
-        })?;
+        let gas_limit = match self.chain() {
+            Chain::Mainnet => 1_000_000u64.into(),
+            _ => self.inner.tx_gas_limit.try_into().map_err(|err| {
+                Error::GasPrice(anyhow!("failed to convert gas_limit to u64: {err:?}"))
+            })?
+        };
         let tx = tx.with_gas_limit(gas_limit);
         let tx = match self.simulation_gas_price().await {
             Some(gas_price) => tx.with_gas_price(gas_price),
